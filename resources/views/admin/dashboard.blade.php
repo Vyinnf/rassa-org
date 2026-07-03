@@ -13,7 +13,8 @@
             </div>
             <div>
                 <div class="text-sm text-gray-500 font-medium mb-1">Total Berita</div>
-                <div class="text-2xl font-bold text-gray-900">0</div>
+                <!-- Ubah angka 0 menjadi variabel ini -->
+                <div class="text-2xl font-bold text-gray-900">{{ $totalArticles }}</div>
             </div>
         </div>
 
