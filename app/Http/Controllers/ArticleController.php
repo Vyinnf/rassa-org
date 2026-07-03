@@ -68,27 +68,57 @@ public function create()
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+// Menampilkan halaman form edit dengan membawa data artikel lama
     public function edit(Article $article)
     {
-        //
+        return view('admin.articles.edit', compact('article'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    // Memproses pembaruan data ke database
     public function update(Request $request, Article $article)
     {
-        //
+        // 1. Validasi
+        $validated = $request->validate([
+            'title'   => 'required|string|max:255',
+            'content' => 'required',
+            'image'   => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        $data = $validated;
+        // Opsional: perbarui slug jika judul berubah
+        $data['slug'] = Str::slug($request->title) . '-' . Str::random(5);
+
+        // 2. Cek apakah ada upload foto baru
+        if ($request->hasFile('image')) {
+            
+            // Hapus foto lama dari storage jika sebelumnya sudah ada fotonya
+            if ($article->image) {
+                Storage::disk('public')->delete($article->image);
+            }
+            
+            // Simpan foto yang baru
+            $data['image'] = $request->file('image')->store('articles', 'public');
+        }
+
+        // 3. Update data di database
+        $article->update($data);
+
+        // 4. Kembalikan ke halaman index dengan pesan sukses
+        return redirect()->route('admin.articles.index')->with('success', 'Berita berhasil diperbarui!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+// Memproses penghapusan data dan file gambar
     public function destroy(Article $article)
     {
-        //
+        // 1. Hapus foto dari folder storage jika artikel ini memiliki foto
+        if ($article->image) {
+            Storage::disk('public')->delete($article->image);
+        }
+
+        // 2. Hapus data artikel dari database
+        $article->delete();
+
+        // 3. Kembalikan ke halaman daftar dengan pesan sukses
+        return redirect()->route('admin.articles.index')->with('success', 'Berita beserta fotonya berhasil dihapus secara permanen!');
     }
 }

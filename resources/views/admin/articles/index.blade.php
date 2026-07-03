@@ -4,6 +4,15 @@
 @section('header', 'Daftar Berita / Artikel')
 
 @section('content')
+
+<!-- Notifikasi Sukses -->
+    @if(session('success'))
+        <div class="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-xl text-sm font-medium flex items-center">
+            <svg class="w-5 h-5 mr-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            {{ session('success') }}
+        </div>
+    @endif
+    
     <div class="mb-6 flex justify-between items-center">
         <p class="text-sm text-gray-500">Kelola semua artikel dan berita untuk pengunjung rassa.org di sini.</p>
 
