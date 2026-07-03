@@ -10,9 +10,13 @@ class ArticleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+public function index()
     {
-        //
+        // Mengambil semua artikel beserta data admin (user) yang menulisnya
+        // latest() akan mengurutkan dari berita yang paling baru dibuat
+        $articles = Article::with('user')->latest()->get();
+
+        return view('admin.articles.index', compact('articles'));
     }
 
     /**

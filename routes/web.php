@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\ArticleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,6 +56,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Nanti route untuk manajemen berita, menu, dan galeri 
     // bisa kita kumpulkan semua di dalam blok ini.
     
+});
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+
+    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+
+    // Tambahkan baris ini untuk mendaftarkan semua rute CRUD artikel sekaligus
+    Route::resource('articles', ArticleController::class);
+
 });
 
 /*

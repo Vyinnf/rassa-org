@@ -21,15 +21,22 @@
 
             <!-- Navigation Links -->
             <nav class="p-4 space-y-1 mt-4">
-                <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-3 bg-[#4A5D23]/10 text-[#4A5D23] rounded-xl font-semibold text-sm transition">
+                
+                <!-- Link Dashboard -->
+                <a href="{{ route('admin.dashboard') }}" 
+                   class="flex items-center px-4 py-3 rounded-xl text-sm transition {{ request()->routeIs('admin.dashboard') ? 'bg-[#4A5D23]/10 text-[#4A5D23] font-semibold' : 'text-gray-500 hover:bg-gray-50 hover:text-[#4A5D23] font-medium' }}">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
                     Dashboard
                 </a>
-                <a href="#" class="flex items-center px-4 py-3 text-gray-500 hover:bg-gray-50 hover:text-[#4A5D23] rounded-xl font-medium text-sm transition">
+
+                <!-- Link Berita / Artikel -->
+                <!-- Menggunakan wildcard (*) agar menu tetap aktif saat di halaman Tambah/Edit Berita -->
+                <a href="{{ route('admin.articles.index') }}" 
+                   class="flex items-center px-4 py-3 rounded-xl text-sm transition {{ request()->routeIs('admin.articles.*') ? 'bg-[#4A5D23]/10 text-[#4A5D23] font-semibold' : 'text-gray-500 hover:bg-gray-50 hover:text-[#4A5D23] font-medium' }}">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
                     Berita / Artikel
                 </a>
-                <!-- Nanti kita tambah menu lain di sini -->
+
             </nav>
         </div>
 
