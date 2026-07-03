@@ -8,6 +8,6 @@ class AdminController extends Controller
 {
     public function index()
     {
-        return "Selamat datang di Ruang Kerja Admin rassa.org!";
+        return view('admin.dashboard');
     }
 }
