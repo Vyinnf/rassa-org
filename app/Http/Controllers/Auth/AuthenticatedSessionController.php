@@ -19,15 +19,25 @@ class AuthenticatedSessionController extends Controller
         return view('auth.login');
     }
 
-    /**
+/**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(LoginRequest $request)
     {
+        // Proses validasi dan autentikasi bawaan Breeze
         $request->authenticate();
-
         $request->session()->regenerate();
 
+        // Cek jika request datang dari AJAX (fetch API kita)
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                // Kita gunakan route 'dashboard' yang sudah kita atur sebagai Dispatcher di web.php
+                'redirect' => route('dashboard') 
+            ]);
+        }
+
+        // Fallback jika login dilakukan tanpa AJAX (misal JavaScript di browser user mati)
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
