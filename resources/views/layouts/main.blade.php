@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Rassa.org | Kopi & Cerita</title>
+    <title>{{ $setting->cafe_name ?? 'Rassa.org' }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -19,7 +19,7 @@
     <!-- Navbar Minimalis -->
     <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
         <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="/" class="text-2xl font-bold tracking-tight text-[#4A5D23]">Rassa<span class="text-gray-400">.org</span></a>
+            <a href="/" class="text-2xl font-bold tracking-tight text-[#4A5D23]">{{ $setting->cafe_name ?? 'Rassa.org' }}</span></a>
             
             <div class="flex items-center space-x-6 text-sm font-semibold text-gray-600">
                 <a href="#menu" class="hover:text-[#4A5D23] transition">Menu Kafe</a>
@@ -46,7 +46,7 @@
     <!-- Footer -->
     <footer class="bg-white border-t border-gray-100 py-12 mt-20">
         <div class="max-w-6xl mx-auto px-6 text-center text-sm text-gray-400">
-            <p>&copy; {{ date('Y') }} Rassa.org. All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} {{ $setting->cafe_name ?? 'Rassa.org' }}. All rights reserved.</p>
         </div>
     </footer>
 

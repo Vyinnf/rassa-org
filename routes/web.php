@@ -2,11 +2,15 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\MessageController;
+use App\Http\Controllers\SettingController;
+use App\Http\Controllers\AdminMessageController;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +24,8 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/berita/{id}', [HomeController::class, 'showArticle'])->name('article.show'); // Tambahkan ini
+Route::post('/kirim-pesan', [MessageController::class, 'store'])->name('message.store');
 
 /*
 |--------------------------------------------------------------------------
@@ -71,8 +77,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     Route::resource('articles', ArticleController::class);
     Route::resource('menus', MenuController::class);
-
+    Route::resource('users', UserController::class);
+    Route::resource('messages', AdminMessageController::class)->only(['index', 'show', 'destroy']);
+    // Rute Pengaturan Profil Kafe
+Route::get('settings', [SettingController::class, 'index'])->name('settings.index');
+Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
 });
+
+Route::post('/kirim-pesan', [MessageController::class, 'store'])->name('message.store');
 
 /*
 |--------------------------------------------------------------------------
