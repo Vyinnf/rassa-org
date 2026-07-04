@@ -12,7 +12,8 @@ use App\Http\Controllers\{
     SettingController,
     AdminMessageController,
     MemberController,
-    DashboardController
+    DashboardController,
+    MemberVoucherController
 };
 
 /*
@@ -59,6 +60,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('articles', ArticleController::class);
     Route::resource('menus', MenuController::class);
     Route::resource('users', UserController::class);
+    Route::post('users/{id}/add-points', [UserController::class, 'addPoints'])->name('users.add-points');
     Route::resource('messages', AdminMessageController::class)->only(['index', 'show', 'destroy']);
     
     // Pengaturan
@@ -73,6 +75,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 */
 Route::middleware(['auth', 'role:customer'])->prefix('member')->name('member.')->group(function () {
     Route::get('/dashboard', [MemberController::class, 'index'])->name('dashboard');
+    Route::get('/vouchers', [MemberVoucherController::class, 'index'])->name('vouchers.index');
+    Route::post('/vouchers/redeem/{id}', [MemberVoucherController::class, 'redeem'])->name('vouchers.redeem');
 });
 
 // Autentikasi Breeze

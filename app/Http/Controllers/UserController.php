@@ -28,4 +28,19 @@ class UserController extends Controller
 
         return redirect()->route('admin.users.index')->with('success', 'Akun pengguna berhasil dihapus secara permanen!');
     }
+
+    public function addPoints(Request $request, $id)
+{
+    $request->validate([
+        'points' => 'required|integer|min:1',
+    ]);
+
+    $user = \App\Models\User::findOrFail($id);
+    
+    // Tambahkan poin
+    $user->points += $request->points;
+    $user->save();
+
+    return back()->with('success', 'Berhasil menambahkan ' . $request->points . ' poin ke ' . $user->name);
+}
 }

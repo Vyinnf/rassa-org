@@ -15,14 +15,14 @@
                 <a href="/" class="text-2xl font-bold text-[#4A5D23]">Rassa.org</a>
             </div>
             
-            <nav class="flex-1 px-4 space-y-2 mt-4">
-                <a href="{{ route('member.dashboard') }}" class="flex items-center px-4 py-3 bg-[#4A5D23]/5 text-[#4A5D23] font-bold rounded-xl transition">
-                    Dashboard
-                </a>
-                <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl transition">
-                    Katalog Voucher
-                </a>
-            </nav>
+<nav class="flex-1 px-4 space-y-2 mt-4">
+    <a href="{{ route('member.dashboard') }}" class="flex items-center px-4 py-3 {{ request()->routeIs('member.dashboard') ? 'bg-[#4A5D23]/5 text-[#4A5D23]' : 'text-gray-600 hover:bg-gray-50' }} font-bold rounded-xl transition">
+        Dashboard
+    </a>
+    <a href="{{ route('member.vouchers.index') }}" class="flex items-center px-4 py-3 {{ request()->routeIs('member.vouchers.*') ? 'bg-[#4A5D23]/5 text-[#4A5D23]' : 'text-gray-600 hover:bg-gray-50' }} font-bold rounded-xl transition">
+        Katalog Voucher
+    </a>
+</nav>
 
             <div class="p-4 border-t border-gray-100">
                 <form action="{{ route('logout') }}" method="POST">
@@ -44,6 +44,27 @@
             @yield('content')
         </main>
     </div>
-
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Script untuk Menampilkan Notifikasi Sukses -->
+@if(session('success'))
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Penukaran Berhasil!',
+        text: '{{ session('success') }}',
+        confirmButtonColor: '#4A5D23',
+        confirmButtonText: 'Terima Kasih',
+        timer: 3000, // Menutup otomatis setelah 3 detik
+        timerProgressBar: true,
+        showClass: {
+            popup: 'animate__animated animate__fadeInDown' // Animasi muncul
+        },
+        hideClass: {
+            popup: 'animate__animated animate__fadeOutUp' // Animasi hilang
+        }
+    });
+</script>
+@endif
 </body>
 </html>
