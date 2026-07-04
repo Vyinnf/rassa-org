@@ -13,7 +13,8 @@ use App\Http\Controllers\{
     AdminMessageController,
     MemberController,
     DashboardController,
-    MemberVoucherController
+    MemberVoucherController,
+    AdminVoucherController
 };
 
 /*
@@ -66,6 +67,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Pengaturan
     Route::get('settings', [SettingController::class, 'index'])->name('settings.index');
     Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
+
+Route::prefix('vouchers')->name('vouchers.')->group(function () {
+    Route::get('/scan', [AdminVoucherController::class, 'index'])->name('scan');
+    Route::post('/confirm', [AdminVoucherController::class, 'redeem'])->name('confirm');
+});
+
 });
 
 /*
