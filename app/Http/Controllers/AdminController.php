@@ -17,8 +17,11 @@ class AdminController extends Controller
         $totalMenus = Menu::count();
         $totalUsers = User::count();
         $unreadMessages = Message::where('is_read', false)->count();
+
+        $recentArticles = \App\Models\Article::latest()->take(5)->get(); // 5 berita terbaru
+    $recentMessages = \App\Models\Message::latest()->take(5)->get();
         
         // Mengirimkan data variabel $totalArticles, $totalMenus, dan $totalUsers ke tampilan dashboard
-        return view('admin.dashboard', compact('totalArticles', 'totalMenus', 'totalUsers', 'unreadMessages'));
+        return view('admin.dashboard', compact('totalArticles', 'totalMenus', 'totalUsers', 'unreadMessages', 'recentArticles', 'recentMessages'));
     }
 }
