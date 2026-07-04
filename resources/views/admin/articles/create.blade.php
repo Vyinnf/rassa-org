@@ -12,7 +12,6 @@
     </div>
 
     <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden max-w-3xl">
-        <!-- Perhatikan enctype="multipart/form-data", ini WAJIB ada kalau mau upload file/foto -->
         <form action="{{ route('admin.articles.store') }}" method="POST" enctype="multipart/form-data" class="p-8">
             @csrf
 
@@ -37,6 +36,13 @@
                 <label for="image" class="block text-sm font-semibold text-gray-700 mb-2">Foto / Thumbnail (Opsional)</label>
                 <input type="file" name="image" id="image" accept="image/*"
                     class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-[#4A5D23]/10 file:text-[#4A5D23] hover:file:bg-[#4A5D23]/20 transition cursor-pointer border border-gray-200 rounded-xl">
+                
+                <!-- Container Preview -->
+                <div id="imagePreviewContainer" class="mt-4 hidden">
+                    <span class="block text-xs font-semibold text-gray-500 mb-2">Pratinjau Foto:</span>
+                    <img id="imagePreview" src="#" alt="Preview" class="h-32 w-auto object-cover rounded-xl border border-gray-200 shadow-sm">
+                </div>
+                
                 @error('image') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
             </div>
 
@@ -48,4 +54,24 @@
             </div>
         </form>
     </div>
+
+    <script>
+        const imageInput = document.getElementById('image');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+
+        imageInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreviewContainer.classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
+            } else {
+                imagePreviewContainer.classList.add('hidden');
+            }
+        });
+    </script>
 @endsection

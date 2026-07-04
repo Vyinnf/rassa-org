@@ -37,11 +37,11 @@
                     Berita / Artikel
                 </a>
                 <!-- Link Menu Kafe -->
-             <a href="{{ route('admin.menus.index') }}" 
-                class="flex items-center px-4 py-3 mt-1 rounded-xl text-sm transition {{ request()->routeIs('admin.menus.*') ? 'bg-[#4A5D23]/10 text-[#4A5D23] font-semibold' : 'text-gray-500 hover:bg-gray-50 hover:text-[#4A5D23] font-medium' }}">
-                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
-                 Menu Kafe
-             </a>
+<a href="{{ route('admin.menus.index') }}" 
+   class="flex items-center px-4 py-3 mt-1 rounded-xl text-sm transition {{ request()->routeIs('admin.menus.*') ? 'bg-[#4A5D23]/10 text-[#4A5D23] font-semibold' : 'text-gray-500 hover:bg-gray-50 hover:text-[#4A5D23] font-medium' }}">
+    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+    Menu Kafe
+</a>
 
             </nav>
         </div>

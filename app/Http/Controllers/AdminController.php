@@ -11,8 +11,9 @@ class AdminController extends Controller
     {
         // Menghitung total berita yang ada di database
         $totalArticles = Article::count();
+        $totalMenus = \App\Models\Menu::count();
         
-        // Mengirimkan data variabel $totalArticles ke tampilan dashboard
-        return view('admin.dashboard', compact('totalArticles'));
+        // Mengirimkan data variabel $totalArticles dan $totalMenus ke tampilan dashboard
+        return view('admin.dashboard', compact('totalArticles', 'totalMenus'));
     }
 }

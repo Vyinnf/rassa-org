@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\HomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,6 +19,7 @@ Route::get('/', function () {
     return view('welcome'); 
 })->name('home');
 
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 /*
 |--------------------------------------------------------------------------
@@ -61,8 +63,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
-
-    // Tambahkan baris ini untuk mendaftarkan semua rute CRUD artikel sekaligus
     Route::resource('articles', ArticleController::class);
 
 });
@@ -70,8 +70,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     Route::resource('articles', ArticleController::class);
-
-    // Tambahkan baris ini untuk manajemen menu kafe
     Route::resource('menus', MenuController::class);
 
 });
