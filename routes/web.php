@@ -1,94 +1,79 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\ArticleController;
-use App\Http\Controllers\MenuController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\MessageController;
-use App\Http\Controllers\SettingController;
-use App\Http\Controllers\AdminMessageController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\{
+    ProfileController,
+    AdminController,
+    ArticleController,
+    MenuController,
+    HomeController,
+    UserController,
+    MessageController,
+    SettingController,
+    AdminMessageController,
+    MemberController,
+    DashboardController
+};
 
 /*
 |--------------------------------------------------------------------------
-| AREA PUBLIK (Guest & Authenticated)
+| 1. AREA PUBLIK (Guest)
 |--------------------------------------------------------------------------
-| Halaman yang bisa diakses oleh siapa saja tanpa perlu login.
-| Nantinya landing page rassa.org akan ada di sini.
 */
-Route::get('/', function () {
-    return view('welcome'); 
-})->name('home');
-
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/berita/{id}', [HomeController::class, 'showArticle'])->name('article.show'); // Tambahkan ini
+Route::get('/berita/{id}', [HomeController::class, 'showArticle'])->name('article.show');
 Route::post('/kirim-pesan', [MessageController::class, 'store'])->name('message.store');
 
 /*
 |--------------------------------------------------------------------------
-| AREA UMUM (Memerlukan Login)
+| 2. DASHBOARD DISPATCHER (Pintu Masuk Auth)
 |--------------------------------------------------------------------------
-| Berlaku untuk semua user yang sudah login, baik Admin maupun Customer.
+| Setelah login, semua user diarahkan ke sini untuk diarahkan ke dasbor masing-masing.
+*/
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+});
+
+/*
+|--------------------------------------------------------------------------
+| 3. AREA UMUM (Auth)
+|--------------------------------------------------------------------------
+| Halaman yang bisa diakses oleh siapa saja yang sudah login (Admin & Customer).
 */
 Route::middleware(['auth', 'verified'])->group(function () {
-    
-    // 1. Dispatcher: Pengarah arah setelah login
-    Route::get('/dashboard', function () {
-        return Auth::user()->role === 'admin' 
-            ? redirect()->route('admin.dashboard') 
-            : view('dashboard');
-    })->name('dashboard');
-
-    // 2. Manajemen Profil (Menggunakan Controller Grouping agar lebih rapi)
-    Route::controller(ProfileController::class)->prefix('profile')->name('profile.')->group(function () {
+    Route::prefix('profile')->name('profile.')->controller(ProfileController::class)->group(function () {
         Route::get('/', 'edit')->name('edit');
         Route::patch('/', 'update')->name('update');
         Route::delete('/', 'destroy')->name('destroy');
     });
-
 });
-
 
 /*
 |--------------------------------------------------------------------------
-| AREA ADMIN KHUSUS
+| 4. AREA ADMIN KHUSUS (Role: admin)
 |--------------------------------------------------------------------------
-| Hanya bisa diakses oleh user dengan role 'admin'.
 */
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     
-    // Nanti route untuk manajemen berita, menu, dan galeri 
-    // bisa kita kumpulkan semua di dalam blok ini.
-    
-});
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-
-    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
-    Route::resource('articles', ArticleController::class);
-
-});
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-
-    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     Route::resource('articles', ArticleController::class);
     Route::resource('menus', MenuController::class);
     Route::resource('users', UserController::class);
     Route::resource('messages', AdminMessageController::class)->only(['index', 'show', 'destroy']);
-    // Rute Pengaturan Profil Kafe
-Route::get('settings', [SettingController::class, 'index'])->name('settings.index');
-Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
+    
+    // Pengaturan
+    Route::get('settings', [SettingController::class, 'index'])->name('settings.index');
+    Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
 });
-
-Route::post('/kirim-pesan', [MessageController::class, 'store'])->name('message.store');
 
 /*
 |--------------------------------------------------------------------------
-| AREA AUTENTIKASI (Bawaan Breeze)
+| 5. AREA MEMBER KHUSUS (Role: customer)
 |--------------------------------------------------------------------------
 */
+Route::middleware(['auth', 'role:customer'])->prefix('member')->name('member.')->group(function () {
+    Route::get('/dashboard', [MemberController::class, 'index'])->name('dashboard');
+});
+
+// Autentikasi Breeze
 require __DIR__.'/auth.php';

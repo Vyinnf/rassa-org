@@ -27,11 +27,22 @@
                 
                 @if (Route::has('login'))
                     <div class="border-l border-gray-200 pl-6 space-x-4">
-                        @auth
-                            <a href="{{ route('admin.dashboard') }}" class="px-4 py-2 rounded-xl bg-[#4A5D23]/10 text-[#4A5D23] hover:bg-[#4A5D23]/20 transition">Dashboard</a>
-                        @else
-                            <a href="{{ route('login') }}" class="hover:text-[#4A5D23] transition">Masuk</a>
-                        @endauth
+@auth
+    <!-- Tombol Dashboard -->
+    <a href="{{ route('dashboard') }}" class="px-4 py-2 rounded-xl bg-[#4A5D23]/10 text-[#4A5D23] hover:bg-[#4A5D23]/20 transition">
+        Dashboard
+    </a>
+    
+    <!-- Tombol Logout (Menggunakan form agar aman) -->
+    <form action="{{ route('logout') }}" method="POST" class="inline">
+        @csrf
+        <button type="submit" class="text-sm font-semibold text-red-500 hover:text-red-700 transition">
+            Keluar
+        </button>
+    </form>
+@else
+    <a href="{{ route('login') }}" class="hover:text-[#4A5D23] transition">Masuk</a>
+@endauth
                     </div>
                 @endif
             </div>
