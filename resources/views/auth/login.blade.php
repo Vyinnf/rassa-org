@@ -496,6 +496,13 @@
         </form>
 
         <div class="divider"></div>
+        <p class="text-center text-sm text-gray-500 font-medium mt-6">
+            Belum memiliki akun?
+            <a href="{{ route('register') }}" class="font-bold text-[#4A5D23] hover:underline transition">Daftar
+                Member</a>
+        </p>
+
+        <div class="divider"></div>
 
         <p class="text-center text-xs text-gray-400">
             &copy; {{ date('Y') }} rassa.org &mdash; Semua hak dilindungi
