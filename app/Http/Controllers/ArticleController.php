@@ -121,4 +121,25 @@ public function create()
         // 3. Kembalikan ke halaman daftar dengan pesan sukses
         return redirect()->route('admin.articles.index')->with('success', 'Berita beserta fotonya berhasil dihapus secara permanen!');
     }
+
+    /**
+     * Hapus foto artikel via AJAX.
+     */
+    public function deleteImage($id)
+    {
+        $article = Article::findOrFail($id);
+
+        // Hapus file fisik jika ada
+        if ($article->image && Storage::disk('public')->exists($article->image)) {
+            Storage::disk('public')->delete($article->image);
+        }
+
+        // Kosongkan nama file di database
+        $article->update(['image' => null]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Foto berhasil dihapus dari sistem.'
+        ]);
+    }
 }

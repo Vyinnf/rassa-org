@@ -59,6 +59,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     
     Route::resource('articles', ArticleController::class);
+    Route::delete('articles/{id}/delete-image', [ArticleController::class, 'deleteImage'])->name('articles.delete-image');
+    Route::delete('menus/{id}/delete-image', [MenuController::class, 'deleteImage'])->name('menus.delete-image');
     Route::resource('menus', MenuController::class);
     Route::resource('users', UserController::class);
     Route::post('users/{id}/add-points', [UserController::class, 'addPoints'])->name('users.add-points');
