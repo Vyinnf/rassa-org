@@ -24,23 +24,35 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): mixed
     {
-        // 1. Lakukan proses autentikasi (pengecekan email & password)
+        // 1. Lakukan proses autentikasi
         $request->authenticate();
 
-        // 2. Regenerasi session untuk mencegah session fixation attacks
+        // 2. Regenerasi session
         $request->session()->regenerate();
 
-        // 3. Tangani balikan untuk AJAX (JSON)
+        // 3. Cek role user yang baru saja login untuk menentukan arah redirect
+        $user = Auth::user();
+        $redirectUrl = '/'; // URL default (fallback)
+
+        if ($user->role === 'admin') {
+            // Jika admin, arahkan ke dashboard admin
+            // (Sesuaikan 'admin.dashboard' dengan nama route admin kamu yang sebenarnya)
+            $redirectUrl = route('admin.dashboard', absolute: false); 
+        } elseif ($user->role === 'customer') {
+            // Jika member/customer, arahkan ke dashboard member
+            $redirectUrl = route('member.dashboard', absolute: false);
+        }
+
+        // 4. Tangani balikan untuk request dari AJAX (Frontend kamu menggunakan ini)
         if ($request->wantsJson()) {
             return response()->json([
                 'message' => 'Login berhasil',
-                // Arahkan ke dashboard setelah login sukses
-                'redirect' => route('member.dashboard', absolute: false)
+                'redirect' => $redirectUrl
             ]);
         }
 
-        // 4. Balikan standar jika bukan dari AJAX (fallback)
-        return redirect()->intended(route('member.dashboard', absolute: false));
+        // 5. Balikan standar jika login tidak menggunakan AJAX
+        return redirect()->intended($redirectUrl);
     }
 
     /**
