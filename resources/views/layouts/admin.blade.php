@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="scroll-smooth">
 
 <head>
     <meta charset="utf-8">
@@ -9,28 +9,121 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <style>
+    /* Scrollbar kustom agar terasa lebih premium */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background-color: rgba(74, 93, 35, 0.25);
+        border-radius: 9999px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(74, 93, 35, 0.45);
+    }
+
+    /* Animasi masuk untuk konten halaman */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in-up {
+        animation: fadeInUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.3s ease-out both;
+    }
+
+    /* Mencegah kedipan elemen sebelum Alpine.js siap */
+    [x-cloak] {
+        display: none !important;
+    }
+
+    /* Menghormati preferensi pengguna yang sensitif terhadap animasi */
+    @media (prefers-reduced-motion: reduce) {
+
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.001ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.001ms !important;
+            scroll-behavior: auto !important;
+        }
+    }
+    </style>
 </head>
 
 <!-- x-data ditempatkan di body -->
 
-<body class="bg-gray-50 font-sans text-gray-900 antialiased" x-data="{ profileModalOpen: false }">
+<body class="bg-gray-50 font-sans text-gray-900 antialiased" x-data="{ profileModalOpen: false, sidebarOpen: false }"
+    :class="{ 'overflow-hidden': profileModalOpen }"
+    @keydown.escape.window="profileModalOpen = false; sidebarOpen = false">
 
     <!-- WRAPPER UTAMA: Wajib flex agar sejajar kiri-kanan -->
     <div class="flex h-screen overflow-hidden">
 
+        <!-- OVERLAY SIDEBAR MOBILE -->
+        <div x-show="sidebarOpen" x-transition:enter="transition-opacity ease-out duration-300"
+            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+            x-transition:leave="transition-opacity ease-in duration-200" x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0" @click="sidebarOpen = false"
+            class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-30 lg:hidden" style="display: none;"></div>
+
         <!-- SIDEBAR -->
-        <aside class="w-64 flex-shrink-0 bg-white border-r border-gray-200 flex flex-col justify-between z-20">
+        <aside x-cloak
+            class="fixed lg:static inset-y-0 left-0 z-40 w-72 sm:w-64 flex-shrink-0 bg-white border-r border-gray-200 flex flex-col justify-between overflow-y-auto custom-scrollbar transition-transform duration-300 ease-in-out lg:translate-x-0"
+            :class="sidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'">
             <div>
                 <!-- Logo -->
-                <div class="h-16 flex items-center px-8 border-b border-gray-100">
-                    <a href="/" class="text-2xl font-extrabold tracking-tighter text-[#4A5D23]">rassa.</a>
+                <div class="h-16 flex items-center justify-between px-6 sm:px-8 border-b border-gray-100">
+                    <a href="/"
+                        class="text-2xl font-extrabold tracking-tighter text-[#4A5D23] inline-block transition-transform duration-200 hover:scale-105">rassa.</a>
+
+                    <!-- Tombol Tutup Sidebar (Mobile) -->
+                    <button @click="sidebarOpen = false"
+                        class="lg:hidden p-2 -mr-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors duration-200"
+                        aria-label="Tutup menu">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
                 </div>
 
-                <nav class="space-y-1 mt-4">
+                <nav class="space-y-1 mt-4 px-0">
                     {{-- Menu Dashboard --}}
-                    <a href="{{ route('admin.dashboard') }}"
-                        class="flex items-center px-4 py-3 font-bold transition {{ request()->routeIs('admin.dashboard') ? 'bg-[#4A5D23]/5 text-[#4A5D23] border-r-4 border-[#4A5D23]' : 'text-gray-600 hover:bg-gray-50' }}">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('admin.dashboard') }}" @click="sidebarOpen = false"
+                        class="group flex items-center px-4 py-3 font-bold transition-all duration-200 ease-in-out hover:translate-x-1 {{ request()->routeIs('admin.dashboard') ? 'bg-[#4A5D23]/5 text-[#4A5D23] border-r-4 border-[#4A5D23]' : 'text-gray-600 hover:bg-gray-50' }}">
+                        <svg class="w-5 h-5 mr-3 transition-transform duration-200 group-hover:scale-110" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 14a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 14a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z">
                             </path>
@@ -39,9 +132,10 @@
                     </a>
 
                     {{-- Menu Berita --}}
-                    <a href="{{ route('admin.articles.index') }}"
-                        class="flex items-center px-4 py-3 font-bold transition {{ request()->routeIs('admin.articles.*') ? 'bg-[#4A5D23]/5 text-[#4A5D23] border-r-4 border-[#4A5D23]' : 'text-gray-600 hover:bg-gray-50' }}">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('admin.articles.index') }}" @click="sidebarOpen = false"
+                        class="group flex items-center px-4 py-3 font-bold transition-all duration-200 ease-in-out hover:translate-x-1 {{ request()->routeIs('admin.articles.*') ? 'bg-[#4A5D23]/5 text-[#4A5D23] border-r-4 border-[#4A5D23]' : 'text-gray-600 hover:bg-gray-50' }}">
+                        <svg class="w-5 h-5 mr-3 transition-transform duration-200 group-hover:scale-110" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 100-4 2 2 0 000 4zm-4-10a2 2 0 100-4 2 2 0 000 4z">
                             </path>
@@ -50,9 +144,10 @@
                     </a>
 
                     {{-- Menu Kafe --}}
-                    <a href="{{ route('admin.menus.index') }}"
-                        class="flex items-center px-4 py-3 font-bold transition {{ request()->routeIs('admin.menus.*') ? 'bg-[#4A5D23]/5 text-[#4A5D23] border-r-4 border-[#4A5D23]' : 'text-gray-600 hover:bg-gray-50' }}">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('admin.menus.index') }}" @click="sidebarOpen = false"
+                        class="group flex items-center px-4 py-3 font-bold transition-all duration-200 ease-in-out hover:translate-x-1 {{ request()->routeIs('admin.menus.*') ? 'bg-[#4A5D23]/5 text-[#4A5D23] border-r-4 border-[#4A5D23]' : 'text-gray-600 hover:bg-gray-50' }}">
+                        <svg class="w-5 h-5 mr-3 transition-transform duration-200 group-hover:scale-110" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0-4v2m0 6V12m0 0V8m0 8v2m0-6h10m-10 0H4">
                             </path>
@@ -61,10 +156,11 @@
                     </a>
 
                     {{-- Menu Pengaturan --}}
-                    <a href="{{ route('admin.settings.index') }}"
-                        class="flex items-center px-4 py-3 font-bold transition {{ request()->routeIs('admin.settings.*') ? 'bg-[#4A5D23]/5 text-[#4A5D23] border-r-4 border-[#4A5D23]' : 'text-gray-600 hover:bg-gray-50' }}">
+                    <a href="{{ route('admin.settings.index') }}" @click="sidebarOpen = false"
+                        class="group flex items-center px-4 py-3 font-bold transition-all duration-200 ease-in-out hover:translate-x-1 {{ request()->routeIs('admin.settings.*') ? 'bg-[#4A5D23]/5 text-[#4A5D23] border-r-4 border-[#4A5D23]' : 'text-gray-600 hover:bg-gray-50' }}">
                         <!-- Ikon Gear/Settings -->
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 mr-3 transition-transform duration-200 group-hover:scale-110 group-hover:rotate-45"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
                             </path>
@@ -75,9 +171,10 @@
                     </a>
 
                     {{-- Manajemen Akun --}}
-                    <a href="{{ route('admin.users.index') }}"
-                        class="flex items-center px-4 py-3 font-bold transition {{ request()->routeIs('admin.users.*') ? 'bg-[#4A5D23]/5 text-[#4A5D23] border-r-4 border-[#4A5D23]' : 'text-gray-600 hover:bg-gray-50' }}">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('admin.users.index') }}" @click="sidebarOpen = false"
+                        class="group flex items-center px-4 py-3 font-bold transition-all duration-200 ease-in-out hover:translate-x-1 {{ request()->routeIs('admin.users.*') ? 'bg-[#4A5D23]/5 text-[#4A5D23] border-r-4 border-[#4A5D23]' : 'text-gray-600 hover:bg-gray-50' }}">
+                        <svg class="w-5 h-5 mr-3 transition-transform duration-200 group-hover:scale-110" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
                             </path>
@@ -86,9 +183,10 @@
                     </a>
 
                     {{-- Kotak Masuk --}}
-                    <a href="{{ route('admin.messages.index') }}"
-                        class="flex items-center px-4 py-3 font-bold transition {{ request()->routeIs('admin.messages.*') ? 'bg-[#4A5D23]/5 text-[#4A5D23] border-r-4 border-[#4A5D23]' : 'text-gray-600 hover:bg-gray-50' }}">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('admin.messages.index') }}" @click="sidebarOpen = false"
+                        class="group flex items-center px-4 py-3 font-bold transition-all duration-200 ease-in-out hover:translate-x-1 {{ request()->routeIs('admin.messages.*') ? 'bg-[#4A5D23]/5 text-[#4A5D23] border-r-4 border-[#4A5D23]' : 'text-gray-600 hover:bg-gray-50' }}">
+                        <svg class="w-5 h-5 mr-3 transition-transform duration-200 group-hover:scale-110" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
                             </path>
@@ -97,9 +195,10 @@
                     </a>
 
                     {{-- Validasi Voucher --}}
-                    <a href="{{ route('admin.vouchers.scan') }}"
-                        class="flex items-center px-4 py-3 font-bold transition {{ request()->routeIs('admin.vouchers.*') ? 'bg-[#4A5D23]/5 text-[#4A5D23] border-r-4 border-[#4A5D23]' : 'text-gray-600 hover:bg-gray-50' }}">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('admin.vouchers.scan') }}" @click="sidebarOpen = false"
+                        class="group flex items-center px-4 py-3 font-bold transition-all duration-200 ease-in-out hover:translate-x-1 {{ request()->routeIs('admin.vouchers.*') ? 'bg-[#4A5D23]/5 text-[#4A5D23] border-r-4 border-[#4A5D23]' : 'text-gray-600 hover:bg-gray-50' }}">
+                        <svg class="w-5 h-5 mr-3 transition-transform duration-200 group-hover:scale-110" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z">
                             </path>
@@ -115,7 +214,7 @@
 
                     <!-- Tombol Trigger (Bisa diklik) -->
                     <button @click.prevent="open = !open" @click.away="open = false"
-                        class="w-full flex items-center p-2 rounded-xl hover:bg-white hover:shadow-sm border border-transparent hover:border-gray-100 transition text-left group">
+                        class="w-full flex items-center p-2 rounded-xl hover:bg-white hover:shadow-sm border border-transparent hover:border-gray-100 transition text-left group active:scale-[0.98]">
 
                         <div
                             class="w-10 h-10 rounded-full bg-[#4A5D23] text-white font-bold flex items-center justify-center mr-3 uppercase shadow-sm group-hover:scale-105 transition-transform">
@@ -146,7 +245,7 @@
 
                         <!-- Tombol Buka Modal Profil -->
                         <button @click.prevent="profileModalOpen = true; open = false"
-                            class="w-full flex items-center px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50 hover:text-[#4A5D23] transition text-left">
+                            class="w-full flex items-center px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50 hover:text-[#4A5D23] transition-colors duration-200 text-left">
                             <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
@@ -164,7 +263,7 @@
                         <form action="{{ route('logout') }}" method="POST" class="block w-full">
                             @csrf
                             <button type="submit"
-                                class="w-full flex items-center px-4 py-3 text-sm font-bold text-red-600 hover:bg-red-50 transition">
+                                class="w-full flex items-center px-4 py-3 text-sm font-bold text-red-600 hover:bg-red-50 transition-colors duration-200">
                                 <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
@@ -184,15 +283,26 @@
 
             <!-- HEADER TOP -->
             <header
-                class="h-16 flex-shrink-0 bg-white border-b border-gray-200 flex items-center px-8 justify-between z-10">
-                <h1 class="text-xl font-bold text-gray-800">@yield('header', 'Dashboard')</h1>
-                <div class="text-sm text-gray-500 font-medium">
+                class="h-16 flex-shrink-0 bg-white border-b border-gray-200 flex items-center px-4 sm:px-6 lg:px-8 justify-between z-10 gap-4">
+                <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+                    <!-- Tombol Buka Sidebar (Mobile) -->
+                    <button @click="sidebarOpen = true"
+                        class="lg:hidden p-2 -ml-2 text-gray-500 hover:text-[#4A5D23] hover:bg-gray-50 rounded-lg transition-colors duration-200 active:scale-95"
+                        aria-label="Buka menu">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    <h1 class="text-lg sm:text-xl font-bold text-gray-800 truncate">@yield('header', 'Dashboard')</h1>
+                </div>
+                <div class="hidden sm:block text-sm text-gray-500 font-medium whitespace-nowrap">
                     {{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}
                 </div>
             </header>
 
             <!-- KONTEN DINAMIS -->
-            <div class="flex-1 overflow-y-auto p-8">
+            <div class="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 lg:p-8 animate-fade-in-up">
                 @yield('content')
             </div>
 
@@ -219,16 +329,18 @@
             x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200"
             x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
             x-transition:leave-end="opacity-0 translate-y-8 sm:translate-y-0 sm:scale-95"
-            class="relative bg-white rounded-3xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col transform transition-all">
+            class="relative bg-white rounded-3xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col transform transition-all custom-scrollbar">
 
             <!-- Header Modal -->
-            <div class="px-8 py-6 border-b border-gray-100 flex justify-between items-center bg-white z-10">
-                <div>
-                    <h2 class="text-2xl font-black text-gray-900">Pengaturan Akun</h2>
-                    <p class="text-sm font-medium text-gray-500 mt-1">Sesuaikan informasi profil dan keamanan Anda.</p>
+            <div
+                class="px-4 sm:px-6 lg:px-8 py-4 sm:py-6 border-b border-gray-100 flex justify-between items-center bg-white z-10">
+                <div class="min-w-0">
+                    <h2 class="text-xl sm:text-2xl font-black text-gray-900 truncate">Pengaturan Akun</h2>
+                    <p class="text-xs sm:text-sm font-medium text-gray-500 mt-1">Sesuaikan informasi profil dan keamanan
+                        Anda.</p>
                 </div>
                 <button @click="profileModalOpen = false"
-                    class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition">
+                    class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors duration-200 active:scale-95 flex-shrink-0 ml-3">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
                         </path>
@@ -237,28 +349,29 @@
             </div>
 
             <!-- Isi Modal (Bisa di-scroll jika kepanjangan) -->
-            <div class="p-8 overflow-y-auto bg-gray-50/50 flex-1">
+            <div class="p-4 sm:p-6 lg:p-8 overflow-y-auto custom-scrollbar bg-gray-50/50 flex-1">
                 @php
                 $user = Auth::user();
                 @endphp
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
                     <!-- Kolom Kiri -->
-                    <div class="space-y-8">
+                    <div class="space-y-6 lg:space-y-8">
                         <div
-                            class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition">
+                            class="bg-white p-5 sm:p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
                             @include('profile.partials.update-profile-information-form')
                         </div>
 
-                        <div class="bg-white p-6 rounded-2xl border border-red-50 shadow-sm hover:shadow-md transition">
+                        <div
+                            class="bg-white p-5 sm:p-6 rounded-2xl border border-red-50 shadow-sm hover:shadow-md transition-shadow duration-300">
                             @include('profile.partials.delete-user-form')
                         </div>
                     </div>
 
                     <!-- Kolom Kanan -->
-                    <div class="space-y-8">
+                    <div class="space-y-6 lg:space-y-8">
                         <div
-                            class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition">
+                            class="bg-white p-5 sm:p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
                             @include('profile.partials.update-password-form')
                         </div>
                     </div>
