@@ -482,7 +482,11 @@
                     <input id="remember_me" type="checkbox" name="remember">
                     <span class="text-sm text-gray-500 font-medium select-none">Ingat saya</span>
                 </label>
-                <span class="text-xs text-gray-400">v1.0</span>
+                @if (Route::has('password.request'))
+                <a href="{{ route('password.request') }}" class="text-sm font-semibold text-[#4A5D23] hover:underline">
+                    Lupa sandi?
+                </a>
+                @endif
             </div>
 
             <!-- Submit -->

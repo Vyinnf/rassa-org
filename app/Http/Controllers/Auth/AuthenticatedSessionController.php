@@ -22,24 +22,26 @@ class AuthenticatedSessionController extends Controller
 /**
      * Handle an incoming authentication request.
      */
-public function store(LoginRequest $request)
-{
-    $request->authenticate();
+    public function store(LoginRequest $request): mixed
+    {
+        // 1. Lakukan proses autentikasi (pengecekan email & password)
+        $request->authenticate();
 
-    $request->session()->regenerate();
+        // 2. Regenerasi session untuk mencegah session fixation attacks
+        $request->session()->regenerate();
 
-    // Jembatan khusus untuk script AJAX hebatmu
-    if ($request->wantsJson()) {
-        return response()->json([
-            'redirect' => auth()->user()->role === 'admin' 
-                ? route('admin.dashboard') 
-                : route('member.dashboard')
-        ]);
+        // 3. Tangani balikan untuk AJAX (JSON)
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Login berhasil',
+                // Arahkan ke dashboard setelah login sukses
+                'redirect' => route('member.dashboard', absolute: false)
+            ]);
+        }
+
+        // 4. Balikan standar jika bukan dari AJAX (fallback)
+        return redirect()->intended(route('member.dashboard', absolute: false));
     }
-
-    // Fallback jika diakses tanpa AJAX
-    return redirect()->intended(route('dashboard', absolute: false));
-}
 
     /**
      * Destroy an authenticated session.

@@ -28,7 +28,7 @@ class RegisteredUserController extends Controller
      *
      * @throws ValidationException
      */
-public function store(Request $request): RedirectResponse
+public function store(Request $request): mixed // Ubah return type hint menjadi mixed atau Response
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -48,7 +48,16 @@ public function store(Request $request): RedirectResponse
 
         Auth::login($user);
 
-        // Arahkan langsung ke dashboard member setelah daftar
+        // --- BAGIAN YANG DIUBAH ---
+        // Jika request mengharapkan JSON (dari AJAX), kembalikan respons JSON
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Registrasi berhasil',
+                'redirect' => route('member.dashboard', absolute: false)
+            ]);
+        }
+
+        // Jika bukan dari AJAX, lakukan redirect standar
         return redirect(route('member.dashboard', absolute: false));
     }
 }
